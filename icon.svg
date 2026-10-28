@@ -1,7 +1,79 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="115" fill="#0f172a" />
-  <rect x="36" y="36" width="440" height="440" rx="90" fill="#1e293b" stroke="#3b82f6" stroke-width="12" />
-  <path d="M285 96L135 280h110l-25 136 157-188H265l20-132z" fill="#3b82f6" />
-  <circle cx="380" cy="380" r="55" fill="#10b981" />
-  <path d="M380 352v56M352 380h56" stroke="#0f172a" stroke-width="16" stroke-linecap="round" />
+
+  <!-- Background -->
+  <rect
+    width="512"
+    height="512"
+    rx="112"
+    fill="#0F172A"
+  />
+
+  <!-- Subtle border -->
+  <rect
+    x="24"
+    y="24"
+    width="464"
+    height="464"
+    rx="92"
+    fill="none"
+    stroke="#263750"
+    stroke-width="2"
+  />
+
+  <!-- Wallet body -->
+  <rect
+    x="76"
+    y="143"
+    width="360"
+    height="238"
+    rx="34"
+    fill="#2563EB"
+  />
+
+  <!-- Wallet top highlight -->
+  <path
+    d="M110 180 H378"
+    fill="none"
+    stroke="#60A5FA"
+    stroke-width="7"
+    stroke-linecap="round"
+  />
+
+  <!-- Wallet pocket -->
+  <path
+    d="M324 225
+       H416
+       Q436 225 436 245
+       V313
+       Q436 333 416 333
+       H324
+       Q296 333 296 305
+       V253
+       Q296 225 324 225Z"
+    fill="#1D4ED8"
+  />
+
+  <!-- Dollar sign inside wallet -->
+  <text
+    x="366"
+    y="300"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="64"
+    font-weight="700"
+    fill="#6EE7B7"
+  >$</text>
+
+  <!-- Lightning bolt -->
+  <path
+    d="M239 183
+       L157 267
+       H215
+       L190 341
+       L282 239
+       H224
+       Z"
+    fill="#6EE7B7"
+  />
+
 </svg>
