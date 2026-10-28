@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" id="metaThemeColor" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>QuickBudget</title>
+  <style>
+    /* --- FOCUSDESK THEME PALETTES --- */
+    :root,
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --primary-text: #ffffff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      --border-width: 1px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-hover: #e2e8f0;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-text: #ffffff;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --card-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+      --border-width: 1px;
+    }
+
+    [data-theme="contrast"] {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --surface-hover: #1f1f1f;
+      --border: #ffffff;
+      --text: #ffffff;
+      --text-muted: #e5e5e5;
+      --primary: #facc15;
+      --primary-hover: #eab308;
+      --primary-text: #000000;
+      --success: #00f5d4;
+      --warning: #ff9900;
+      --danger: #ff2e2e;
+      --card-shadow: none;
+      --border-width: 2px;
+    }
+
+    [data-theme="neon"] {
+      --bg: #120428;
+      --surface: #1f093d;
+      --surface-hover: #31105e;
+      --border: #4d198d;
+      --text: #fdf4ff;
+      --text-muted: #d8b4fe;
+      --primary: #ff1e9b;
+      --primary-hover: #d90f7e;
+      --primary-text: #ffffff;
+      --success: #00f5d4;
+      --warning: #ff6b00;
+      --danger: #ff2a55;
+      --card-shadow: 0 4px 16px rgba(255, 30, 155, 0.18);
+      --border-width: 1px;
+    }
+
+    [data-theme="royal"] {
+      --bg: #061d2d;
+      --surface: #0b2b3c;
+      --surface-hover: #123e54;
+      --border: #8a6a32;
+      --text: #f7f1e5;
+      --text-muted: #a3c2c2;
+      --primary: #c89d54;
+      --primary-hover: #b38840;
+      --primary-text: #061d2d;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #f87171;
+      --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      --border-width: 1px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      max-width: 520px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding-bottom: 85px;
+      transition: background-color 0.25s ease, color 0.2s ease;
+    }
+
+    /* Top Header & Summary Bar */
+    header {
+      padding: 14px 16px;
+      background: var(--surface);
+      border-bottom: var(--border-width) solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: var(--card-shadow);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-trigger-btn {
+      background: var(--bg);
+      color: var(--text);
+      border: var(--border-width) solid var(--border);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.15s ease;
+    }
+
+    .theme-trigger-btn:active {
+      transform: scale(0.92);
+    }
+
+    .app-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .solar-badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: var(--border-width) solid var(--border);
+    }
+
+    .master-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--bg);
+      padding: 10px;
+      border-radius: 12px;
+      border: var(--border-width) solid var(--border);
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 2px;
+    }
+
+    .stat-val {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    /* Main Content Container */
+    main {
+      padding: 16px;
+    }
+
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Toolbar for View Switching */
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .section-heading {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .toggle-group {
+      display: flex;
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 3px;
+      border: var(--border-width) solid var(--border);
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .toggle-btn.active {
+      background: var(--primary);
+      color: var(--primary-text);
+    }
+
+    /* Flashcards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .cat-card {
+      background: var(--surface);
+      border: var(--border-width) solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.1s ease, border-color 0.15s ease;
+    }
+
+    .cat-card:active {
+      transform: scale(0.98);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 6px;
+    }
+
+    .cat-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.25;
+    }
+
+    .quick-add-btn {
+      background: var(--primary);
+      color: var(--primary-text);
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .quick-add-btn:active {
+      background: var(--primary-hover);
+      transform: scale(0.92);
+    }
+
+    .card-numbers {
+      margin-bottom: 8px;
+    }
+
+    .spent-amount {
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .budget-amount {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 7px;
+      background: var(--bg);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.25s ease;
+    }
+
+    .card-footer-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* Compact Table View */
+    .table-container {
+      background: var(--surface);
+      border: var(--border-width) solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Planning Section Styles */
+    .plan-card {
+      background: var(--surface);
+      border: var(--border-width) solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .plan-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .plan-card-title {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      background: var(--surface-hover);
+      color: var(--text);
+      border: var(--border-width) solid var(--border);
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--primary-text);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .plan-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plan-row:last-child {
+      border-bottom: none;
+    }
+
+    .plan-cat-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .plan-cat-name {
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .plan-cat-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Bottom Navigation */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-width: 520px;
+      margin: 0 auto;
+      background: var(--surface);
+      border-top: var(--border-width) solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 8px 16px;
+      z-index: 20;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 9px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .nav-item.active {
+      color: var(--primary-text);
+      background: var(--primary);
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      background: var(--surface);
+      width: 100%;
+      max-width: 520px;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 16px 28px;
+      border-top: var(--border-width) solid var(--border);
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      background: var(--bg);
+      border: var(--border-width) solid var(--border);
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--bg);
+      border: var(--border-width) solid var(--border);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .live-preview {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--primary);
+      color: var(--primary-text);
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .badge-ok { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .badge-warn { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .badge-over { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+    /* Theme Selector Grid inside Modal */
+    .theme-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .theme-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.1s ease, border-color 0.15s ease;
+    }
+
+    .theme-option.active {
+      border-color: var(--primary);
+    }
+
+    .theme-option:active {
+      transform: scale(0.98);
+    }
+
+    .theme-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .theme-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .theme-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .swatch-group {
+      display: flex;
+      gap: 5px;
+    }
+
+    .swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header>
+    <div class="header-top">
+      <div class="header-left">
+        <button class="theme-trigger-btn" onclick="openThemeModal()" title="Change Theme">🎨</button>
+        <div class="app-title">QuickBudget</div>
+      </div>
+      <div class="solar-badge" id="currentSolarDate">1405/--/--</div>
+    </div>
+    <div class="master-bar">
+      <div>
+        <div class="stat-label">Total Budget</div>
+        <div class="stat-val" id="hdrTotalBudget">0k</div>
+      </div>
+      <div>
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-val" id="hdrTotalSpent">0k</div>
+      </div>
+      <div>
+        <div class="stat-label">Remaining</div>
+        <div class="stat-val" id="hdrRemaining">0k</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- VIEW 1: SPENDINGS (FLASHCARDS & TABLE) -->
+    <section id="viewSpendings" class="view-section active">
+      <div class="toolbar">
+        <span class="section-heading">Tap + to add spending, or tap card for logs</span>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="btnCardMode" onclick="setDisplayMode('cards')">Cards</button>
+          <button class="toggle-btn" id="btnTableMode" onclick="setDisplayMode('table')">Table</button>
+        </div>
+      </div>
+
+      <!-- Flashcards Grid Container -->
+      <div id="cardsContainer" class="cards-grid"></div>
+
+      <!-- Compact Table Container -->
+      <div id="tableContainer" class="table-container" style="display: none;">
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Spent</th>
+              <th>Budget</th>
+              <th>Left</th>
+              <th style="text-align:right;">Add</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW 2: PLANNING & ANALYSIS -->
+    <section id="viewPlanning" class="view-section">
+      <!-- Total Master Budget Card -->
+      <div class="plan-card">
+        <div class="plan-card-header">
+          <div>
+            <div class="plan-card-title">Total Master Budget</div>
+            <div class="plan-cat-sub" id="unallocatedText">Unallocated: 0k</div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openBudgetModal('master', 'add')">+ Add</button>
+            <button class="btn" onclick="openBudgetModal('master', 'edit')">✎ Edit</button>
+          </div>
+        </div>
+        <div style="font-size: 1.55rem; font-weight: 800; color: var(--primary);" id="planMasterBudgetDisplay">0k</div>
+      </div>
+
+      <!-- Category Budgets Allocation -->
+      <div class="plan-card">
+        <div class="plan-card-header">
+          <div class="plan-card-title">Category Budgets</div>
+          <button class="btn btn-primary" onclick="openNewCategoryModal()">+ New Category</button>
+        </div>
+        <div id="planCategoriesList"></div>
+      </div>
+
+      <!-- Manual Cycle Reset Controls -->
+      <div class="plan-card">
+        <div class="plan-card-header">
+          <div>
+            <div class="plan-card-title">Manual Cycle Control</div>
+            <div class="plan-cat-sub">Archive current spendings & reset to 0k whenever you want</div>
+          </div>
+          <button class="btn btn-danger" onclick="archiveAndResetCycle()">Reset Cycle</button>
+        </div>
+      </div>
+
+      <!-- Current & Past Analysis -->
+      <div class="plan-card">
+        <div class="plan-card-header">
+          <div class="plan-card-title">📊 Current Cycle Analysis</div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Spent / Budget</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="analysisTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Past Archived Cycles History -->
+      <div class="plan-card">
+        <div class="plan-card-header">
+          <div class="plan-card-title">🕓 Past Cycles Summary</div>
+        </div>
+        <div id="pastCyclesContainer" class="plan-cat-sub">No archived cycles yet.</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="navSpendings" onclick="switchTab('spendings')">
+      <span>💳 Spendings</span>
+    </button>
+    <button class="nav-item" id="navPlanning" onclick="switchTab('planning')">
+      <span>📐 Plan & Analyze</span>
+    </button>
+  </nav>
+
+  <!-- MODAL 0: FOCUSDESK THEME SELECTOR (TOP LEFT ICON) -->
+  <div class="modal-backdrop" id="themeModal" onclick="if(event.target===this) closeModal('themeModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">🎨 Select Theme</div>
+        <button class="close-btn" onclick="closeModal('themeModal')">✕</button>
+      </div>
+      <div class="theme-list" id="themeOptionsList"></div>
+    </div>
+  </div>
+
+  <!-- MODAL 1: QUICK ADD SPENDING -->
+  <div class="modal-backdrop" id="spendModal" onclick="if(event.target===this) closeModal('spendModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" id="spendModalTitle">Add Spending</div>
+        <button class="close-btn" onclick="closeModal('spendModal')">✕</button>
+      </div>
+      <form onsubmit="saveSpending(event)">
+        <input type="hidden" id="spendCatId" />
+        <div class="form-group">
+          <label class="form-label">Amount (in thousands — e.g. 85 = 85k, 1453 = 1.453M)</label>
+          <input type="number" step="any" id="spendAmountInput" class="form-input" placeholder="e.g. 85" inputmode="decimal" required oninput="updateLivePreview('spendAmountInput', 'spendPreview')" />
+          <div class="live-preview" id="spendPreview">Formatted: 0k</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Optional Short Note</label>
+          <input type="text" id="spendNoteInput" class="form-input" style="font-size:0.95rem; font-weight:400;" placeholder="e.g. Espresso, Self lunch..." />
+        </div>
+        <button type="submit" class="submit-btn">Save Spending</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CATEGORY HISTORY LOGS -->
+  <div class="modal-backdrop" id="historyModal" onclick="if(event.target===this) closeModal('historyModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="historyModalTitle">Category History</div>
+          <div class="plan-cat-sub" id="historyModalSub"></div>
+        </div>
+        <button class="close-btn" onclick="closeModal('historyModal')">✕</button>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+        <button class="btn btn-primary" id="historyQuickAddBtn">+ Add Spending</button>
+        <button class="btn btn-danger" id="historyResetCatBtn">Clear Category Spendings</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>Note</th>
+              <th>Solar Date & Time</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: BUDGET ADD / EDIT (MASTER OR CATEGORY) -->
+  <div class="modal-backdrop" id="budgetModal" onclick="if(event.target===this) closeModal('budgetModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" id="budgetModalTitle">Update Budget</div>
+        <button class="close-btn" onclick="closeModal('budgetModal')">✕</button>
+      </div>
+      <form onsubmit="saveBudgetUpdate(event)">
+        <input type="hidden" id="budgetTarget" />
+        <input type="hidden" id="budgetMode" />
+        <div class="form-group">
+          <label class="form-label" id="budgetInputLabel">Enter Amount (in thousands)</label>
+          <input type="number" step="any" id="budgetAmountInput" class="form-input" placeholder="e.g. 500 or 1500" inputmode="decimal" required oninput="updateLivePreview('budgetAmountInput', 'budgetPreview')" />
+          <div class="live-preview" id="budgetPreview">Formatted: 0k</div>
+        </div>
+        <button type="submit" class="submit-btn">Confirm</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: NEW CATEGORY -->
+  <div class="modal-backdrop" id="newCatModal" onclick="if(event.target===this) closeModal('newCatModal')">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">New Category</div>
+        <button class="close-btn" onclick="closeModal('newCatModal')">✕</button>
+      </div>
+      <form onsubmit="saveNewCategory(event)">
+        <div class="form-group">
+          <label class="form-label">Category Name & Emoji</label>
+          <input type="text" id="newCatName" class="form-input" style="font-size:1rem;" placeholder="e.g. 📚 Books & Courses" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Initial Planned Budget (in thousands)</label>
+          <input type="number" step="any" id="newCatBudget" class="form-input" placeholder="e.g. 400" inputmode="decimal" required oninput="updateLivePreview('newCatBudget', 'newCatPreview')" />
+          <div class="live-preview" id="newCatPreview">Formatted: 0k</div>
+        </div>
+        <button type="submit" class="submit-btn">Create Category</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // --- 0. FOCUSDESK THEMES CONFIGURATION ---
+    const THEMES = [
+      {
+        id: 'dark',
+        name: 'Modern Dark',
+        desc: 'Deep slate & electric blue',
+        metaColor: '#0f172a',
+        swatches: ['#0f172a', '#1e293b', '#3b82f6', '#10b981']
+      },
+      {
+        id: 'light',
+        name: 'Modern Light',
+        desc: 'Crisp daylight alabaster & royal blue',
+        metaColor: '#f1f5f9',
+        swatches: ['#f1f5f9', '#ffffff', '#2563eb', '#059669']
+      },
+      {
+        id: 'contrast',
+        name: 'High Contrast',
+        desc: 'Pitch-black, sharp white borders & cyber yellow',
+        metaColor: '#000000',
+        swatches: ['#000000', '#ffffff', '#facc15', '#00f5d4']
+      },
+      {
+        id: 'neon',
+        name: 'Neon Candy',
+        desc: 'Cyber-sweet magenta, mint & neon orange',
+        metaColor: '#120428',
+        swatches: ['#120428', '#ff1e9b', '#00f5d4', '#ff6b00']
+      },
+      {
+        id: 'royal',
+        name: 'Royal Blue, Green & Gold',
+        desc: 'Prussian navy-teal, emerald & antique gold',
+        metaColor: '#061d2d',
+        swatches: ['#061d2d', '#0b2b3c', '#c89d54', '#10b981']
+      }
+    ];
+
+    // --- 1. NUMBER FORMATTING (85 -> 85k, 1453 -> 1.453M) ---
+    function formatMoney(val) {
+      const num = Number(val) || 0;
+      if (num === 0) return '0k';
+      const sign = num < 0 ? '-' : '';
+      const abs = Math.abs(num);
+      if (abs >= 1000) {
+        const millions = parseFloat((abs / 1000).toFixed(3));
+        return `${sign}${millions}M`;
+      }
+      return `${sign}${parseFloat(abs.toFixed(2))}k`;
+    }
+
+    function updateLivePreview(inputId, previewId) {
+      const val = document.getElementById(inputId).value;
+      document.getElementById(previewId).textContent = `Formatted: ${formatMoney(val)}`;
+    }
+
+    // --- 2. SOLAR (JALALI) DATE & TIME GENERATOR ---
+    function getSolarNow() {
+      const now = new Date();
+      const solarDate = new Intl.DateTimeFormat('fa-IR-u-nu-latn', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(now);
+      const time = new Intl.DateTimeFormat('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(now);
+      return { date: solarDate, time };
+    }
+
+    // --- 3. STATE MANAGEMENT & DEFAULT DATA ---
+    const STORAGE_KEY = 'quickbudget_state_v1';
+    let displayMode = 'cards';
+
+    const defaultState = {
+      theme: 'dark',
+      masterBudget: 3000,
+      categories: [
+        { id: 'c1', name: '🍽️ Uni Food', budget: 500, logs: [] },
+        { id: 'c2', name: '☕ Coffee', budget: 350, logs: [] },
+        { id: 'c3', name: '👕 Clothing', budget: 1200, logs: [] },
+        { id: 'c4', name: '🚕 Transport', budget: 450, logs: [] },
+        { id: 'c5', name: '🎮 Fun & Misc', budget: 500, logs: [] }
+      ],
+      pastCycles: []
+    };
+
+    let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultState;
+    if (!state.theme) state.theme = 'dark';
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderAll();
+    }
+
+    function applyTheme(themeId) {
+      state.theme = themeId;
+      document.documentElement.setAttribute('data-theme', themeId);
+      const themeObj = THEMES.find(t => t.id === themeId) || THEMES[0];
+      document.getElementById('metaThemeColor').setAttribute('content', themeObj.metaColor);
+      saveState();
+    }
+
+    function openThemeModal() {
+      const container = document.getElementById('themeOptionsList');
+      container.innerHTML = '';
+      THEMES.forEach(t => {
+        const div = document.createElement('div');
+        div.className = `theme-option ${state.theme === t.id ? 'active' : ''}`;
+        div.onclick = () => {
+          applyTheme(t.id);
+          closeModal('themeModal');
+        };
+        div.innerHTML = `
+          <div class="theme-info">
+            <span class="theme-name">${t.name} ${state.theme === t.id ? '✓' : ''}</span>
+            <span class="theme-desc">${t.desc}</span>
+          </div>
+          <div class="swatch-group">
+            ${t.swatches.map(color => `<span class="swatch" style="background:${color};"></span>`).join('')}
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      document.getElementById('themeModal').classList.add('open');
+    }
+
+    function getCatSpent(cat) {
+      return cat.logs.reduce((sum, item) => sum + Number(item.amount), 0);
+    }
+
+    // --- 4. RENDERING ENGINE ---
+    function renderAll() {
+      document.documentElement.setAttribute('data-theme', state.theme || 'dark');
+      document.getElementById('currentSolarDate').textContent = getSolarNow().date;
+
+      const totalSpent = state.categories.reduce((acc, c) => acc + getCatSpent(c), 0);
+      const totalAllocated = state.categories.reduce((acc, c) => acc + Number(c.budget), 0);
+      const effectiveBudget = Math.max(state.masterBudget, totalAllocated);
+      const remaining = effectiveBudget - totalSpent;
+
+      // Header Stats
+      document.getElementById('hdrTotalBudget').textContent = formatMoney(effectiveBudget);
+      document.getElementById('hdrTotalSpent').textContent = formatMoney(totalSpent);
+      const remEl = document.getElementById('hdrRemaining');
+      remEl.textContent = formatMoney(remaining);
+      remEl.style.color = remaining < 0 ? 'var(--danger)' : 'var(--success)';
+
+      renderSpendingsView();
+      renderPlanningView(totalAllocated);
+    }
+
+    function renderSpendingsView() {
+      const cardsContainer = document.getElementById('cardsContainer');
+      const tableBody = document.getElementById('summaryTableBody');
+      cardsContainer.innerHTML = '';
+      tableBody.innerHTML = '';
+
+      state.categories.forEach(cat => {
+        const spent = getCatSpent(cat);
+        const budget = Number(cat.budget) || 0;
+        const left = budget - spent;
+        const pct = budget > 0 ? Math.min(100, Math.round((spent / budget) * 100)) : (spent > 0 ? 100 : 0);
+
+        let barColor = 'var(--success)';
+        if (pct >= 80 && pct <= 100) barColor = 'var(--warning)';
+        if (spent > budget) barColor = 'var(--danger)';
+
+        // 1. Flashcard Item
+        const card = document.createElement('div');
+        card.className = 'cat-card';
+        card.onclick = () => openHistoryModal(cat.id);
+        card.innerHTML = `
+          <div>
+            <div class="card-top">
+              <div class="cat-title">${cat.name}</div>
+              <button class="quick-add-btn" onclick="event.stopPropagation(); openSpendModal('${cat.id}')">+</button>
+            </div>
+            <div class="card-numbers">
+              <div class="spent-amount">${formatMoney(spent)}</div>
+              <div class="budget-amount">of ${formatMoney(budget)}</div>
+            </div>
+          </div>
+          <div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:${pct}%; background:${barColor};"></div>
+            </div>
+            <div class="card-footer-info">
+              <span>${left >= 0 ? formatMoney(left) + ' left' : formatMoney(Math.abs(left)) + ' over'}</span>
+              <span>${cat.logs.length} items</span>
+            </div>
+          </div>
+        `;
+        cardsContainer.appendChild(card);
+
+        // 2. Summary Table Row
+        const tr = document.createElement('tr');
+        tr.style.cursor = 'pointer';
+        tr.onclick = () => openHistoryModal(cat.id);
+        tr.innerHTML = `
+          <td style="font-weight:700;">${cat.name}</td>
+          <td style="font-weight:800;">${formatMoney(spent)}</td>
+          <td style="color:var(--text-muted);">${formatMoney(budget)}</td>
+          <td style="color:${left < 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:700;">
+            ${formatMoney(left)}
+          </td>
+          <td style="text-align:right;">
+            <button class="btn btn-primary" onclick="event.stopPropagation(); openSpendModal('${cat.id}')">+</button>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function renderPlanningView(totalAllocated) {
+      document.getElementById('planMasterBudgetDisplay').textContent = formatMoney(state.masterBudget);
+      const unallocated = state.masterBudget - totalAllocated;
+      const unallocEl = document.getElementById('unallocatedText');
+      unallocEl.textContent = unallocated >= 0
+        ? `Unallocated buffer: ${formatMoney(unallocated)} (Allocated: ${formatMoney(totalAllocated)})`
+        : `Over-allocated by ${formatMoney(Math.abs(unallocated))} (Allocated: ${formatMoney(totalAllocated)})`;
+
+      // Category Budget Controls
+      const list = document.getElementById('planCategoriesList');
+      list.innerHTML = '';
+      state.categories.forEach(cat => {
+        const spent = getCatSpent(cat);
+        const row = document.createElement('div');
+        row.className = 'plan-row';
+        row.innerHTML = `
+          <div class="plan-cat-info">
+            <span class="plan-cat-name">${cat.name}</span>
+            <span class="plan-cat-sub">Budget: <strong>${formatMoney(cat.budget)}</strong> (Spent: ${formatMoney(spent)})</span>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="openBudgetModal('${cat.id}', 'add')">+ Add</button>
+            <button class="btn" onclick="openBudgetModal('${cat.id}', 'edit')">✎ Edit</button>
+            <button class="btn btn-danger" onclick="deleteCategory('${cat.id}')">✕</button>
+          </div>
+        `;
+        list.appendChild(row);
+      });
+
+      // Analysis Table
+      const analysisBody = document.getElementById('analysisTableBody');
+      analysisBody.innerHTML = '';
+      state.categories.forEach(cat => {
+        const spent = getCatSpent(cat);
+        const diff = cat.budget - spent;
+        let badge = `<span class="badge badge-ok">${formatMoney(diff)} safe</span>`;
+        if (spent > cat.budget) {
+          badge = `<span class="badge badge-over">+${formatMoney(Math.abs(diff))} over</span>`;
+        } else if (cat.budget > 0 && spent / cat.budget >= 0.85) {
+          badge = `<span class="badge badge-warn">${formatMoney(diff)} left</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:700;">${cat.name}</td>
+          <td>${formatMoney(spent)} / ${formatMoney(cat.budget)}</td>
+          <td>${badge}</td>
+        `;
+        analysisBody.appendChild(tr);
+      });
+
+      // Past Cycles History
+      const pastContainer = document.getElementById('pastCyclesContainer');
+      if (state.pastCycles.length === 0) {
+        pastContainer.innerHTML = 'No archived cycles yet. When you tap "Reset Cycle", a snapshot will be saved here to help you plan.';
+      } else {
+        pastContainer.innerHTML = state.pastCycles.slice().reverse().map(cycle => `
+          <div style="padding: 10px 0; border-bottom: 1px solid var(--border); color: var(--text);">
+            <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:4px;">
+              <span>📅 Reset on ${cycle.date} (${cycle.time})</span>
+              <span>Spent: ${formatMoney(cycle.totalSpent)} / ${formatMoney(cycle.masterBudget)}</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              ${cycle.breakdown.map(b => `${b.name}: ${formatMoney(b.spent)}/${formatMoney(b.budget)}`).join(' • ')}
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    // --- 5. INTERACTIONS & MODALS ---
+    function switchTab(tab) {
+      document.getElementById('viewSpendings').classList.toggle('active', tab === 'spendings');
+      document.getElementById('viewPlanning').classList.toggle('active', tab === 'planning');
+      document.getElementById('navSpendings').classList.toggle('active', tab === 'spendings');
+      document.getElementById('navPlanning').classList.toggle('active', tab === 'planning');
+    }
+
+    function setDisplayMode(mode) {
+      displayMode = mode;
+      document.getElementById('cardsContainer').style.display = mode === 'cards' ? 'grid' : 'none';
+      document.getElementById('tableContainer').style.display = mode === 'table' ? 'block' : 'none';
+      document.getElementById('btnCardMode').classList.toggle('active', mode === 'cards');
+      document.getElementById('btnTableMode').classList.toggle('active', mode === 'table');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    // Quick Add Spending
+    function openSpendModal(catId) {
+      const cat = state.categories.find(c => c.id === catId);
+      if (!cat) return;
+      document.getElementById('spendCatId').value = catId;
+      document.getElementById('spendModalTitle').textContent = `Add to ${cat.name}`;
+      document.getElementById('spendAmountInput').value = '';
+      document.getElementById('spendNoteInput').value = '';
+      document.getElementById('spendPreview').textContent = 'Formatted: 0k';
+      document.getElementById('spendModal').classList.add('open');
+      setTimeout(() => document.getElementById('spendAmountInput').focus(), 80);
+    }
+
+    function saveSpending(e) {
+      e.preventDefault();
+      const catId = document.getElementById('spendCatId').value;
+      const amount = parseFloat(document.getElementById('spendAmountInput').value);
+      const note = document.getElementById('spendNoteInput').value.trim();
+      if (!amount || amount <= 0) return;
+
+      const cat = state.categories.find(c => c.id === catId);
+      const { date, time } = getSolarNow();
+      cat.logs.unshift({
+        id: Date.now().toString(),
+        amount,
+        note: note || '—',
+        date,
+        time
+      });
+
+      saveState();
+      closeModal('spendModal');
+      if (document.getElementById('historyModal').classList.contains('open')) {
+        openHistoryModal(catId);
+      }
+    }
+
+    // Category History Modal
+    function openHistoryModal(catId) {
+      const cat = state.categories.find(c => c.id === catId);
+      if (!cat) return;
+      const spent = getCatSpent(cat);
+      document.getElementById('historyModalTitle').textContent = cat.name;
+      document.getElementById('historyModalSub').textContent = `Total Spent: ${formatMoney(spent)} of ${formatMoney(cat.budget)}`;
+
+      document.getElementById('historyQuickAddBtn').onclick = () => openSpendModal(catId);
+      document.getElementById('historyResetCatBtn').onclick = () => {
+        if (confirm(`Clear all spendings in ${cat.name}?`)) {
+          cat.logs = [];
+          saveState();
+          openHistoryModal(catId);
+        }
+      };
+
+      const tbody = document.getElementById('historyTableBody');
+      tbody.innerHTML = '';
+      if (cat.logs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No spendings recorded yet.</td></tr>`;
+      } else {
+        cat.logs.forEach(log => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-weight:800;">${formatMoney(log.amount)}</td>
+            <td style="color:var(--text-muted);">${log.note}</td>
+            <td style="font-size:0.78rem; color:var(--text-muted);">${log.date} • ${log.time}</td>
+            <td style="text-align:right;">
+              <button class="btn btn-danger" style="padding:3px 7px;" onclick="deleteLog('${cat.id}', '${log.id}')">✕</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+      document.getElementById('historyModal').classList.add('open');
+    }
+
+    function deleteLog(catId, logId) {
+      const cat = state.categories.find(c => c.id === catId);
+      if (!cat) return;
+      cat.logs = cat.logs.filter(l => l.id !== logId);
+      saveState();
+      openHistoryModal(catId);
+    }
+
+    // Budget Add (+) / Edit (✎) Modal
+    function openBudgetModal(target, mode) {
+      document.getElementById('budgetTarget').value = target;
+      document.getElementById('budgetMode').value = mode;
+      const input = document.getElementById('budgetAmountInput');
+
+      if (target === 'master') {
+        document.getElementById('budgetModalTitle').textContent = mode === 'add' ? 'Add to Master Budget' : 'Edit Master Budget';
+        input.value = mode === 'edit' ? state.masterBudget : '';
+      } else {
+        const cat = state.categories.find(c => c.id === target);
+        document.getElementById('budgetModalTitle').textContent = mode === 'add' ? `Add to ${cat.name} Budget` : `Edit ${cat.name} Budget`;
+        input.value = mode === 'edit' ? cat.budget : '';
+      }
+      updateLivePreview('budgetAmountInput', 'budgetPreview');
+      document.getElementById('budgetModal').classList.add('open');
+      setTimeout(() => input.focus(), 80);
+    }
+
+    function saveBudgetUpdate(e) {
+      e.preventDefault();
+      const target = document.getElementById('budgetTarget').value;
+      const mode = document.getElementById('budgetMode').value;
+      const val = parseFloat(document.getElementById('budgetAmountInput').value) || 0;
+
+      if (target === 'master') {
+        state.masterBudget = mode === 'add' ? Number(state.masterBudget) + val : val;
+      } else {
+        const cat = state.categories.find(c => c.id === target);
+        if (cat) {
+          cat.budget = mode === 'add' ? Number(cat.budget) + val : val;
+        }
+      }
+      saveState();
+      closeModal('budgetModal');
+    }
+
+    // Create / Delete Category
+    function openNewCategoryModal() {
+      document.getElementById('newCatName').value = '';
+      document.getElementById('newCatBudget').value = '';
+      document.getElementById('newCatPreview').textContent = 'Formatted: 0k';
+      document.getElementById('newCatModal').classList.add('open');
+    }
+
+    function saveNewCategory(e) {
+      e.preventDefault();
+      const name = document.getElementById('newCatName').value.trim();
+      const budget = parseFloat(document.getElementById('newCatBudget').value) || 0;
+      if (!name) return;
+      state.categories.push({
+        id: 'c_' + Date.now(),
+        name,
+        budget,
+        logs: []
+      });
+      saveState();
+      closeModal('newCatModal');
+    }
+
+    function deleteCategory(catId) {
+      const cat = state.categories.find(c => c.id === catId);
+      if (confirm(`Delete category "${cat.name}" and its logs?`)) {
+        state.categories = state.categories.filter(c => c.id !== catId);
+        saveState();
+      }
+    }
+
+    // Manual Cycle Reset & Archive
+    function archiveAndResetCycle() {
+      const totalSpent = state.categories.reduce((acc, c) => acc + getCatSpent(c), 0);
+      if (!confirm('Reset all current spendings to 0k and archive this cycle into history?')) return;
+
+      const { date, time } = getSolarNow();
+      state.pastCycles.push({
+        date,
+        time,
+        masterBudget: state.masterBudget,
+        totalSpent,
+        breakdown: state.categories.map(c => ({
+          name: c.name,
+          budget: c.budget,
+          spent: getCatSpent(c)
+        }))
+      });
+
+      state.categories.forEach(c => c.logs = []);
+      saveState();
+    }
+
+    // Init
+    applyTheme(state.theme || 'dark');
+    
+    // Register Offline Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('./service-worker.js')
+          .catch((err) => console.error('SW registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
