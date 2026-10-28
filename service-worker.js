@@ -3,7 +3,7 @@ const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './icon.svg'
+  './icon1.svg'
 ];
 
 // 1. Install Event: Cache all core files immediately
